@@ -6,6 +6,8 @@ The user supplies (in the script for now) the data, and then the fwhm of the blu
 
 The basic algorithm for this relies on a simple approximation to the full convolution - namely, at time t_0 +- 4\sigma, the gaussian is effectively 0.
 
+The user supplies a cutoff value, which is the smallest value that the kernel will contain. For non-periodic functions, this is the edge value.
+
 Therefore, the full gaussian vector which would normally be convolved with the signal can be approximated extremely well as a truncated gaussian, which reduces the number of calculations required significantly.
 
-In the future, a few other useful features will be added (Adding a Lorentzian and Voigt function, adding the ability to use multiple fwhm for the Voigt, a more friendly user experience, etc.)
+Also included are Lorentzians, which don't work quite as well, as the function is not as local. Soon, a box-blur will be added.
