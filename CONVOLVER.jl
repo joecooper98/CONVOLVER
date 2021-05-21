@@ -32,7 +32,6 @@ const dt = t[2]-t[1]
 
 #function
 
-
 function create_kernel(fwhm::Float64, dt::Float64, cutoff::Real, type::String)
         type = lowercase(type)
                 if type == "lorentzian" 
@@ -64,11 +63,11 @@ function lorentzian(fwhm::Float64, dt::Float64, cutoff::Float64) # define a norm
                  end
         
 function gaussian(fwhm::Float64, dt::Float64, cutoff::Float64)::Array{Float64} # return a normalised gaussian vector of a certain length as defined on wikipedia
-                fwhm /= dt
-                c = 1/(2*√(2log(2)))*fwhm
-                a = 1/(c*√(2pi))
-                length =2*convert(Int64,ceil(√(-log(c*√(2pi)*cutoff)*(2*c^2)))) + 1
-                return [ a*exp(-(x-(length+1)*0.5)^2/(2*c^2)) for x in 1:length]
+               fwhm /= dt
+               c = 1/(2*√(2log(2)))*fwhm
+               a = 1/(c*√(2pi))
+               length =2*convert(Int64,ceil(√(-log(c*√(2pi)*cutoff)*(2*c^2)))) + 1
+               return  [ a*exp(-(x-(length+1)*0.5)^2/(2*c^2)) for x in 1:length]
                end
 
 
@@ -89,9 +88,9 @@ function convolve(signal::Array{Float64}, kernel::Array{Float64}, extendforward:
         kep = kernel[end]
         ksp = kernel[begin]
         totalcalcs = nt*nq*kernelsize
-        println("Convolving with kernel of size $kernelsize...")
-        println("Edge values = $ksp, $kep...")
-        println("Convolving $nq q points and $nt time points with $totalcalcs total calculations...")
+        println("Convolving with kernel of size ",kernelsize,"...")
+        println("Edge values = ",ksp,", ",kep,"...")
+        println("Convolving ",nq," q points and ",nt," time points with ",totalcalcs," total calculations...")
 
         #pad signal - we only need pad by the total size of the kernel, as we only care about the data in the same region as the original scattering
          
@@ -130,7 +129,7 @@ function convolve(signal::Array{Float64}, kernel::Array{Float64}, extendforward:
         # This is then repeated for every q. A triple nested loop may seem slow, but testing is actually fairly fast. An alternative method for large series would be using the Convolution Theorem, but this is harder to implement
         print("Total time taken for convolution  =")
         @time for i in 1:nq #nq # for all q
-                for j in 1:nt # for all t
+                   for j in 1:nt # for all t
                         signal[j,i] = 0.
                         for k in 1:kernelsize
                               signal[j,i] += kernel[k] * padsignal[k+j-1,i]
@@ -140,9 +139,10 @@ function convolve(signal::Array{Float64}, kernel::Array{Float64}, extendforward:
  return signal
 end
 
-@time convolved_signal =convolve(pdW,create_kernel(fwhm, dt, cutoff, "Gaussian"))
+kernel = create_kernel(fwhm, dt, cutoff, "Gaussian")
+
+convolved_signal = convolve(pdW,kernel)
 
 open("convolved_signal", "w") do io
         writedlm(io,convolved_signal)
 end
-
