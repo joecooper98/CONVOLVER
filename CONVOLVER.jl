@@ -116,24 +116,21 @@ function convolve(signal::Array{Float64}, kernel::Array{Float64}, extendforward:
                 println("Extending the array backward in time using zeros...")
         end
 
-        # initiate kernel
-
         # identity kernel for checking 
         #  kernel = zeros(Float64,kernelsize,1)
-        #  kernel[cutoffind]=1.
-        
-       # signal = zeros(Float64,nt,nq) # initiate the convolved signal
+        #  kernel[cutoffind]=1
         
         # here we only scan the values for which we have the full kernel.
         # The kernel starts with its centre at the first value of the original signal (left side in the padding), and then scans along, performing a sum(hadamard(kernel,signal) for each time
         # This is then repeated for every q. A triple nested loop may seem slow, but testing is actually fairly fast. An alternative method for large series would be using the Convolution Theorem, but this is harder to implement
         print("Total time taken for convolution  =")
-        @time for i in 1:nq #nq # for all q
-                   for j in 1:nt # for all t
-                        signal[j,i] = 0.
-                        for k in 1:kernelsize
-                              signal[j,i] += kernel[k] * padsignal[k+j-1,i]
-                      end
+        @time @inbounds for i in 1:nq #nq # for all q
+                   @inbounds @views for j in 1:nt # for all t
+                      @fastmath signal[j,i] = LinearAlgebra.BLAS.dot(kernel,padsignal[j:kernelsize+j-1,i]
+                      #  signal[j,i] = 0.
+                      #  for k in 1:kernelsize
+                      #        signal[j,i] += kernel[k] * padsignal[k+j-1,i]
+                      #end
                 end
         end
  return signal
