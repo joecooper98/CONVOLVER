@@ -10,4 +10,4 @@ The user supplies a cutoff value, which is the smallest value that the kernel wi
 
 Therefore, the full gaussian vector which would normally be convolved with the signal can be approximated extremely well as a truncated gaussian, which reduces the number of calculations required significantly.
 
-Also included are Lorentzians, which don't work quite as well, as the function is not as local. Soon, a box-blur will be added.
+Also included are Lorentzians, which don't work quite as well, as the function is not as local. You can see this by plotting a gaussian vs a lorentzian, of the same FWHM - the gaussian will be zero well before the lorentzian is, and so this speed up is no longer as effective. A box blur routine is also present.
