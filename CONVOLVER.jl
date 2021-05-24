@@ -3,6 +3,7 @@
 using Profile
 using MAT
 using DelimitedFiles
+using LinearAlgebra
 
 trajfile = "pdW"
 
@@ -126,7 +127,7 @@ function convolve(signal::Array{Float64}, kernel::Array{Float64}, extendforward:
         print("Total time taken for convolution  =")
         @time @inbounds for i in 1:nq #nq # for all q
                    @inbounds @views for j in 1:nt # for all t
-                      @fastmath signal[j,i] = LinearAlgebra.BLAS.dot(kernel,padsignal[j:kernelsize+j-1,i]
+                           @fastmath signal[j,i] = LinearAlgebra.BLAS.dot(kernel,padsignal[j:kernelsize+j-1,i])
                       #  signal[j,i] = 0.
                       #  for k in 1:kernelsize
                       #        signal[j,i] += kernel[k] * padsignal[k+j-1,i]
